@@ -1,83 +1,65 @@
-class Atm:
-    def __init__(self, balance=0):
-        self.balance = balance
+class ATM:
+    def __init__(self):
+        self.balance = 0
 
     def deposit(self, amount):
         if amount > 0:
             self.balance += amount
-            print(f"Deposited amount: {amount}")
+            print(f"Deposited Rs{amount:.2f}.")
         else:
-            print("Error: Enter a positive number")
+            print("Deposit amount must be positive.")
+
+
 
     def withdraw(self, amount):
         if amount > 0:
-            if self.balance >= amount:
+            if amount <= self.balance:
                 self.balance -= amount
-                print(f"Withdrawn amount: {amount}")
+                print(f"Withdrew Rs{amount:}.")
             else:
-                print("Error: You don't have sufficient balance")
+                print("Insufficient funds.")
         else:
-            print("Error: Enter a positive amount")
+            print("Withdrawal amount must be positive.")
 
-    def check_balance(self):
-        print(f"Your balance is: {self.balance}")
-
-    def quit(self):
-        print("Thank you for using this ATM")
+    def display_balance(self):
+        print(f"Current balance: Rs{self.balance:}")
 
 
 def main():
-    atm = Atm()  # Initialize ATM with default balance
+    atm = ATM()
 
     while True:
+        print("\nATM Menu")
         print("1. Deposit")
         print("2. Withdraw")
-        print("3. Check Balance")
+        print("3. Display Balance")
         print("4. Quit")
 
-        option = int(input("Select option 1-4: "))
+        choice = input("Select an option (1-4): ")
 
-        if option == 1:
-            amount = float(input("Enter your deposit amount: "))
-            atm.deposit(amount)
-        elif option == 2:
-            amount = float(input("Enter your withdrawal amount: "))
-            atm.withdraw(amount)
-        elif option == 3:
-            atm.check_balance()
-        elif option == 4:
-            atm.quit()
+        if choice == '1':
+            try:
+                amount=float(input("Enter the money you want to deposite"))
+                atm.deposit(amount)
+            except ValueError:
+                print("Invaild input Please enter a vaild input")
+
+        elif choice == '2':
+            try:
+                amount = float(input("Enter amount to withdraw: "))
+                atm.withdraw(amount)
+            except ValueError:
+                print("Invaild input Please enter a vaild input")
+
+        elif choice == '3':
+            atm.display_balance()
+        elif choice == '4':
+            print("Thank you for using the ATM.")
             break
         else:
-            print("Invalid input, please choose a valid option")
-
-
+            print("Invalid choice. Please select a valid option.")
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
