@@ -1,6 +1,8 @@
 import mysql.connector
+import pandas as pd
 from mysql.connector import Error
 import datetime
+from tabulate import tabulate
 
 
 class ATM_Management:
@@ -98,6 +100,40 @@ class ATM_Management:
         else:
             print("You need to login first.")
 
+    def show_transaction(self):
+        if self.current_user:
+            try:
+                # Fetch all transactions for the logged-in user
+                query = '''SELECT Transaction_id, Transaction_Type, Amount, Transaction_Date
+                           FROM Transaction
+                           WHERE User_ID = %s
+                           ORDER BY Transaction_Date DESC'''
+                self.cursor.execute(query, (self.User_ID,))
+                transactions = self.cursor.fetchall()
+
+                if transactions:
+                    # Convert the result into a DataFrame for better presentation
+                    df = pd.DataFrame(transactions, columns=['Transaction ID', 'Type', 'Amount', 'Date & Time'])
+
+                    # Format 'Date & Time' column for better readability
+                    df['Date & Time'] = pd.to_datetime(df['Date & Time']).dt.strftime('%Y-%m-%d %H:%M:%S')
+
+                    # Save the DataFrame to a CSV file for record-keeping
+                    csv_filename = f"transactions_for_user_{self.User_ID}.csv"
+                    df.to_csv(csv_filename, index=False)
+
+                    # Display the DataFrame using tabulate for a clean output
+                    print("\nRecent Transactions:")
+                    print(tabulate(df, headers='keys', tablefmt='pretty', showindex=False))
+
+                else:
+                    print("No transactions found for this user.")
+
+            except mysql.connector.Error as e:
+                print(f"Error: {e}")
+        else:
+            print("You need to login first.")
+
     def main_menu(self):
         while True:
             print("\nATM Menu")
@@ -132,9 +168,10 @@ class ATM_Management:
             print("1. Deposit")
             print("2. Withdraw")
             print("3. Display Balance")
-            print("4. Logout")
+            print("4. Show Transactions")
+            print("5. Logout")
 
-            choice = input("Select an option (1-4): ")
+            choice = input("Select an option (1-5): ")
 
             if choice == '1':
                 try:
@@ -151,6 +188,8 @@ class ATM_Management:
             elif choice == '3':
                 self.display_balance()
             elif choice == '4':
+                self.show_transaction()  # No need to pass User_ID, it's already tracked by the object
+            elif choice == '5':
                 print("Logged out successfully.")
                 break
             else:
@@ -160,6 +199,7 @@ class ATM_Management:
 if __name__ == "__main__":
     atm = ATM_Management()
     atm.main_menu()
+
 
 # def ATM():
 #     pass
